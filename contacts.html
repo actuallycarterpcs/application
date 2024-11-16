@@ -22,6 +22,7 @@
       max-width: 500px;
       margin: 20px auto;
       text-align: left;
+      position: relative;
     }
     h1 {
       font-size: 24px;
@@ -42,6 +43,20 @@
     .copy-btn:hover {
       background-color: #0056b3;
     }
+    .clear-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
+    .clear-btn:hover {
+      background-color: #c82333;
+    }
     .copy-message {
       color: green;
       font-size: 14px;
@@ -55,27 +70,30 @@
   <div id="contactList"></div>
   
   <script>
-    const applications = JSON.parse(localStorage.getItem('applications')) || [];
     const contactList = document.getElementById('contactList');
+
+    const applications = JSON.parse(localStorage.getItem('applications')) || [];
+    
     if (applications.length === 0) {
-      contactList.innerHTML = '<p>no applications have been submitted yet.</p>';
+      contactList.innerHTML = '<p>No applications have been submitted yet.</p>';
     } else {
-      applications.forEach(app => {
+      applications.forEach((app, index) => {
         const container = document.createElement('div');
         container.classList.add('container');
         container.innerHTML = `
-          <p><strong>name:</strong> ${app.name}</p>
-          <p><strong>contact number:</strong> ${app.contactNumber}</p>
-          <p><strong>address:</strong> ${app.address}</p>
-          <button class="copy-btn" onclick="copyApplication('${app.name}', '${app.contactNumber}', '${app.address}')">copy</button>
-          <p class="copy-message" id="message-${app.name}" style="display:none;">copied!!</p>
+          <p><strong>Name:</strong> ${app.name}</p>
+          <p><strong>Contact Number:</strong> ${app.contactNumber}</p>
+          <p><strong>Address:</strong> ${app.address}</p>
+          <button class="copy-btn" onclick="copyApplication('${app.name}', '${app.contactNumber}', '${app.address}')">Copy</button>
+          <button class="clear-btn" onclick="clearApplication(${index})">Clear</button>
+          <p class="copy-message" id="message-${app.name}" style="display:none;">Copied!!</p>
         `;
         contactList.appendChild(container);
       });
     }
 
     function copyApplication(name, contactNumber, address) {
-      const textToCopy = `name: ${name}\ncontact number: ${contactNumber}\naddress: ${address}`;
+      const textToCopy = `Name: ${name}\nContact Number: ${contactNumber}\nAddress: ${address}`;
       navigator.clipboard.writeText(textToCopy)
         .then(() => {
           const messageElement = document.getElementById(`message-${name}`);
@@ -84,7 +102,28 @@
             messageElement.style.display = 'none';
           }, 2000);
         })
-        .catch(err => console.error('error copying text: ', err));
+        .catch(err => console.error('Error copying text: ', err));
+    }
+
+    function clearApplication(index) {
+      let applications = JSON.parse(localStorage.getItem('applications')) || [];
+      applications.splice(index, 1);
+      localStorage.setItem('applications', JSON.stringify(applications));
+
+      contactList.innerHTML = '';
+      applications.forEach((app, index) => {
+        const container = document.createElement('div');
+        container.classList.add('container');
+        container.innerHTML = `
+          <p><strong>Name:</strong> ${app.name}</p>
+          <p><strong>Contact Number:</strong> ${app.contactNumber}</p>
+          <p><strong>Address:</strong> ${app.address}</p>
+          <button class="copy-btn" onclick="copyApplication('${app.name}', '${app.contactNumber}', '${app.address}')">Copy</button>
+          <button class="clear-btn" onclick="clearApplication(${index})">Clear</button>
+          <p class="copy-message" id="message-${app.name}" style="display:none;">Copied!!</p>
+        `;
+        contactList.appendChild(container);
+      });
     }
   </script>
 </body>
