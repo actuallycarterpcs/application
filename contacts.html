@@ -80,7 +80,7 @@
       applications.forEach((app, index) => {
         const container = document.createElement('div');
         container.classList.add('container');
-        container.innerHTML = `
+        container.innerHTML = `        
           <p><strong>Name:</strong> ${app.name}</p>
           <p><strong>Contact Number:</strong> ${app.contactNumber}</p>
           <p><strong>Address:</strong> ${app.address}</p>
@@ -101,13 +101,15 @@
           setTimeout(() => {
             messageElement.style.display = 'none';
           }, 2000);
+          
+          logToDiscord(`Copied application:\nName: ${name}\nContact Number: ${contactNumber}\nAddress: ${address}`);
         })
         .catch(err => console.error('Error copying text: ', err));
     }
 
     function clearApplication(index) {
       let applications = JSON.parse(localStorage.getItem('applications')) || [];
-      applications.splice(index, 1);
+      const removedApp = applications.splice(index, 1)[0];
       localStorage.setItem('applications', JSON.stringify(applications));
 
       contactList.innerHTML = '';
@@ -123,6 +125,32 @@
           <p class="copy-message" id="message-${app.name}" style="display:none;">Copied!!</p>
         `;
         contactList.appendChild(container);
+      });
+
+      logToDiscord(`Cleared application:\nName: ${removedApp.name}\nContact Number: ${removedApp.contactNumber}\nAddress: ${removedApp.address}`);
+    }
+
+    function logToDiscord(message) {
+      const webhookUrl = 'https://discord.com/api/webhooks/1307165857406910464/_hLWz_qHG3D5sKMX36YvWIplGXmlt0dCCKlF9uHvh69Hu-d4rUawx0Mz6BM3i1Hv4ubG';
+      
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: message
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Message sent to Discord');
+        } else {
+          console.error('Error sending message to Discord');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
       });
     }
   </script>
