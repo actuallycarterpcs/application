@@ -1,56 +1,56 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>submit your application</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
-        font-family: 'Montserrat', sans-serif;
-        background-color: #f9f9f9;
-        color: #333;
-        text-align: center;
-        padding: 20px;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: center;
+            padding: 20px;
         }
         form {
-        display: inline-block;
-        max-width: 400px;
-        width: 100%;
-        margin: 0 auto;
+            display: inline-block;
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
         }
         input, textarea, button {
-        font-family: 'Montserrat', sans-serif; 
-        font-size: 16px;
-        width: 100%;
-        margin: 10px 0;
-        padding: 10px;
-        box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            box-sizing: border-box;
         }
         input, textarea {
-        border: 1px solid #ccc;
-        border-radius: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         textarea {
-        resize: none;
+            resize: none;
         }
         button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
         button:hover {
-        background-color: #0056b3;
+            background-color: #0056b3;
         }
         .response-message {
-        font-size: 14px;
-        color: green;
+            font-size: 14px;
+            color: green;
         }
     </style>
-    </head>
-    <body>
+</head>
+<body>
     <h1>submit your application</h1>
     <form id="contactForm">
         <input type="text" id="name" placeholder="Name" required>
@@ -62,20 +62,36 @@
 
     <script>
         function saveContactData() {
-        const name = document.getElementById('name').value.trim();
-        const contactNumber = document.getElementById('contactNumber').value.trim();
-        const address = document.getElementById('address').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const contactNumber = document.getElementById('contactNumber').value.trim();
+            const address = document.getElementById('address').value.trim();
 
-        if (name && contactNumber && address) {
-            let applications = JSON.parse(localStorage.getItem('applications')) || [];
-            applications.push({ name, contactNumber, address });
-            localStorage.setItem('applications', JSON.stringify(applications));
-            document.getElementById('responseMessage').textContent = 'application submitted successfully!';
-            document.getElementById('contactForm').reset();
-        } else {
-            alert('please fill in all fields.');
-        }
+            if (name && contactNumber && address) {
+                let applications = JSON.parse(localStorage.getItem('applications')) || [];
+                applications.push({ name, contactNumber, address });
+                localStorage.setItem('applications', JSON.stringify(applications));
+
+                const message = {
+                    content: `**Name**: ${name}
+                    **Contact Number**: ${contactNumber}
+                    **Address**: ${address}`
+                };
+
+                fetch('https://discord.com/api/webhooks/1307165857406910464/_hLWz_qHG3D5sKMX36YvWIplGXmlt0dCCKlF9uHvh69Hu-d4rUawx0Mz6BM3i1Hv4ubG', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(message),
+                })
+                .then(() => {
+                    document.getElementById('responseMessage').textContent = 'Application submitted successfully!';
+                    document.getElementById('contactForm').reset();
+                });
+            } else {
+                alert('Please fill in all fields.');
+            }
         }
     </script>
-    </body>
-    </html>
+</body>
+</html>
